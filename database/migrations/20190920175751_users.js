@@ -8,7 +8,6 @@ exports.up = function(knex) {
       .notNullable()
       .unique();
     users.string('password', 255).notNullable();
-    users.string('location').notNullable();
   })
   .createTable('issues', tbl => {
     tbl.increments();
@@ -19,12 +18,21 @@ exports.up = function(knex) {
     tbl.string('issueLocation', 255);
     tbl.text('details');
     tbl.string('imageURL');
-    tbl.integer('user_id').unsigned().notNullable().references('id').inTable('users')
+    tbl.integer('user_id').unsigned().notNullable().references('id').inTable('users');
+    tbl.string('category').notNullable();
+  })
+  .createTable('userVoted', tbl => {
+    tbl.increments('voted_id');
+    tbl.integer('user_id').unsigned().notNullable().references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE');
+    tbl.integer('issue_id').unsigned().notNullable().references('id').inTable('issues').onDelete('CASCADE').onUpdate('CASCADE');
+    tbl.unique(['user_id', 'issue_id'])
+    tbl.boolean('upvoted').defaultTo(false)
   })
 };
 
 exports.down = function(knex, Promise) {
   return knex.schema
+    .dropTableIfExists('userVoted')
     .dropTableIfExists('issues')
-    .dropTableIfExists('users');
+    .dropTableIfExists('users')
 };
