@@ -9,11 +9,13 @@ router.post('/register', (req, res) => {
   let user = req.body;
   const hash = bcrypt.hashSync(user.password, 10)
   user.password = hash;
+  console.log(user);
 
   Users.add(user)
-    .then(res => {
+    .then(response => {
       const token = generateToken(user)
-      res.status(201).json({res, token})
+      response.token = token
+      res.status(201).json(response)
     })
     .catch(err => {
       res.status(500).json({ message: 'Unexpected error registering the user.'})
@@ -36,6 +38,16 @@ router.post('/login', (req, res) => {
     .catch(err => {
       res.status(500).json(err)
     })
+})
+
+router.get('/users', (req, res) => {
+  Users.find()
+  .then(response => {
+    res.status(200).json(response)
+  })
+  .catch(error => {
+    res.status(500).json(error)
+  })
 })
 
 //may move to another file
