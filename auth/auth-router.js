@@ -5,8 +5,9 @@ const jwt = require('jsonwebtoken');
 const Users = require('../users/users-model.js');
 const Issues = require('../issues/issues-model.js');
 const secrets = require('../config/secrets.js');
+const otherMiddle = require('../api/other-middleware.js');
 
-router.post('/register', (req, res) => {
+router.post('/register', otherMiddle.uniqueUsername, (req, res) => {
   let user = req.body;
   const hash = bcrypt.hashSync(user.password, 10)
   user.password = hash;
@@ -51,18 +52,12 @@ router.get('/users', (req, res) => {
 })
 
 // get user by user id
-router.get('/users/:id', (req, res) => {
-  Users.findById(req.params.id)
-  .then(response => {
-    res.status(200).json(response)
-  })
-  .catch(err => {
-    res.status(500).json({message: "Error getting user data for that ID"})
-  })
+router.get('/users/:id', otherMiddle.validateUserId, (req, res) => {
+  res.status(200).json(res.user)
 })
 
 // get user's issues by user id
-router.get('/users/:id/issues', (req, res) => {
+router.get('/users/:id/issues', otherMiddle.validateUserId, (req, res) => {
   Issues.findByUserId(req.params.id)
   .then(response => {
     res.status(200).json(response)

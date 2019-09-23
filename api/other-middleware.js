@@ -10,11 +10,33 @@ module.exports = {
 }
 
 function uniqueUsername(req, res, next){
-
+    const username = req.body.username;
+    Users.findBy({username})
+    .then(response => {
+        if (response) {
+            res.status(400).json({message: 'A user with that email already exists'})
+        } else {
+            next();
+        }
+    })
+    .catch(error => {
+        res.status(500).json({message: 'Error checking username for uniqueness'})
+    })
 }
 
 function validateUserId(req, res, next){
-
+    Users.findById(req.params.id)
+    .then(response => {
+        if(response){
+            res.user = response;
+            next()
+        } else {
+            res.status(404).json({message: "No user found with that ID"})
+        }
+    })
+    .catch(err => {
+      res.status(500).json({message: "Error looking up user ID"})
+    })
 }
 
 function validateIssueId(req, res, next){
@@ -39,7 +61,6 @@ async function permissionCheck(req, res, next){
     const issueId = req.params.id;
     const userId = req.user.userid;
     const {user_id} = await db('issues').where('id', issueId).select('user_id').first();
-    // console.log('user_id: ', user_id, 'userId', userId)
     if (user_id === userId){
         next();
     } else {
