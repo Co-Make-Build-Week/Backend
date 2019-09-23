@@ -8,7 +8,7 @@ exports.up = function(knex) {
       .notNullable()
       .unique();
     users.string('password', 255).notNullable();
-    // users.string('hoa').notNullable(); // to be selected on sign-up?
+    users.string('location').notNullable();
   })
   .createTable('issues', tbl => {
     tbl.increments();
