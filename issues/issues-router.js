@@ -8,7 +8,8 @@ const Issues = require('./issues-model');
 const Voted = require('./vote-model');
 // const secrets = require('../config/secrets')
 
-// route possibly to be protected by middleware requiring user to be logged in. 
+// returns list of all issues
+// todo: add url queries to sort, filter, limit
 router.get('/', restricted, (req, res) => {
     Issues.find()
     .then(response => {
@@ -19,7 +20,7 @@ router.get('/', restricted, (req, res) => {
     })
 })
 
-// create a new issue. Also must go through middleware first. 
+// create a new issue
 router.post('/', restricted, (req, res) => {
     let issue = req.body;
     issue.user_id = req.user.userid;
@@ -33,25 +34,11 @@ router.post('/', restricted, (req, res) => {
 })
 
 // get issue by id
-// todo: write 'validateID' middleware
-router.get('/:id', restricted, (req, res) => {
-    let issueId = req.params.id;
-    Issues.findById(issueId)
-    .then(response => {
-        if(response){
-            res.status(200).json(response);
-        } else {
-            res.status(500).json({message: 'No issue found with that ID'})
-        }
-    })
-    .catch(error => {
-        res.status(500).json({message: 'Error looking up issue with that ID'})
-    })
+router.get('/:id', restricted, otherMiddle.validateIssueId, (req, res) => {
+    res.status(200).json(res.issue);
 })
 
 // edit issue by id
-// todo: write middleware to check user that's logged in id matches issue to edit user_id
-
 router.put('/:id', restricted, otherMiddle.permissionCheck, async (req, res) => {
     let issueId = req.params.id;
     let issueUpdate = req.body;
@@ -89,7 +76,7 @@ router.put('/:id/downvote', restricted, (req, res) => {
 })
 
 // delete issue by id
-router.delete('/:id', restricted, (req, res) => {
+router.delete('/:id', restricted, otherMiddle.permissionCheck, (req, res) => {
     const issueId = req.params.id
     Issues.remove(issueId)
     .then(response => {

@@ -1,15 +1,29 @@
 const db = require('../database/db-config');
+const Issues = require('../issues/issues-model');
 
 module.exports = {
     validateIssueId,
     permissionCheck
 }
 
-function validateIssueId(id){
-
+function validateIssueId(req, res, next){
+    let issueId = req.params.id;
+    Issues.findById(issueId)
+    .then(response => {
+        if(response){
+            res.issue = response;
+            next();
+        } else {
+            res.status(500).json({message: 'No issue found with that ID'}).end();
+        }
+    })
+    .catch(error => {
+        res.status(500).json({message: 'Unexpected error looking up issue with that ID'}).end();
+    })
 }
 
-// to check issue.user_id matches logged in user id, req.user.userid
+// to check issue.user_id matches logged in user id, req.user.userid.
+// note: can only be used after restricted-middleware
 async function permissionCheck(req, res, next){
     const issueId = req.params.id;
     const userId = req.user.userid;
@@ -18,7 +32,7 @@ async function permissionCheck(req, res, next){
     if (user_id === userId){
         next();
     } else {
-        res.status(500).json({message: "Another user created this post. Cannot edit."})
+        res.status(500).json({message: "Another user created this post. Cannot edit or delete."}).end();
     }
 }
 
