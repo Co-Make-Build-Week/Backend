@@ -49,6 +49,16 @@ router.get('/users', (req, res) => {
   })
 })
 
+// get user by user id
+router.get('/users/:id', (req, res) => {
+
+})
+
+// get user's issues by user id
+router.get('/users/:id/issues', (req, res) => {
+
+})
+
 //may move to another file
 function generateToken(user) {
   const payload = {
