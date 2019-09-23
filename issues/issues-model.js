@@ -6,7 +6,8 @@ module.exports = {
   findBy,
   findById,
   remove,
-  edit
+  edit,
+  findByUserId
 }
 
 //may not be necessary
@@ -25,6 +26,10 @@ function edit(id, issue) {
 
 function findBy(filter) {
   return db('issues').where(filter)
+}
+
+function findByUserId(userId){
+  return db('issues').where({'user_id': userId})
 }
 
 function findById(id) {

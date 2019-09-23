@@ -1,9 +1,20 @@
 const db = require('../database/db-config');
 const Issues = require('../issues/issues-model');
+const Users = require('../users/users-model');
 
 module.exports = {
     validateIssueId,
-    permissionCheck
+    permissionCheck,
+    uniqueUsername,
+    validateUserId
+}
+
+function uniqueUsername(req, res, next){
+
+}
+
+function validateUserId(req, res, next){
+
 }
 
 function validateIssueId(req, res, next){
