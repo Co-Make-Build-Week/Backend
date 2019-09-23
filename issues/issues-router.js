@@ -31,6 +31,18 @@ router.post('/', restricted, (req, res) => {
     })
 })
 
+// get issue by id
+router.get('/:id', restricted, (req, res) => {
+    let issueId = req.params.id;
+    Issues.findById(issueId)
+    .then(response => {
+        res.status(200).json(response);
+    })
+    .catch(response => {
+        res.status(500).json({message: 'Error getting issue with that ID'})
+    })
+})
+
 // edit issue by id
 router.put('/:id', restricted, (req, res) => {
 
