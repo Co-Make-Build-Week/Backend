@@ -12,7 +12,7 @@ function find() {
   return db('issues')
 }
 
-async function add(user) {
+async function add(issue) {
   const [id] = await db('issues').insert(issue, 'id')
   return findById(id)
 }

@@ -16,7 +16,7 @@ exports.up = function(knex) {
     tbl.integer('upvotes').notNullable().defaultTo(1);
     tbl.timestamps(false, true); // should create two columns: created_at, updated_at
     tbl.string('title', 255).notNullable();
-    tbl.string('location', 255);
+    tbl.string('issueLocation', 255);
     tbl.text('details');
     tbl.string('imageURL');
     tbl.integer('user_id').unsigned().notNullable().references('id').inTable('users')

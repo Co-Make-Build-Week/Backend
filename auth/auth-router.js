@@ -62,7 +62,8 @@ router.get('/users/:id/issues', (req, res) => {
 //may move to another file
 function generateToken(user) {
   const payload = {
-    username: user.username
+    username: user.username,
+    userid: user.id
   }
   const options = {
     expiresIn: '5d'
