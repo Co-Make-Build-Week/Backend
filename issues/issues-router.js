@@ -32,20 +32,41 @@ router.post('/', restricted, (req, res) => {
 })
 
 // get issue by id
+// todo: write 'validateID' middleware
 router.get('/:id', restricted, (req, res) => {
     let issueId = req.params.id;
     Issues.findById(issueId)
     .then(response => {
-        res.status(200).json(response);
+        if(response){
+            res.status(200).json(response);
+        } else {
+            res.status(500).json({message: 'No issue found with that ID'})
+        }
     })
     .catch(response => {
-        res.status(500).json({message: 'Error getting issue with that ID'})
+        res.status(500).json({message: 'Error looking up issue with that ID'})
     })
 })
 
 // edit issue by id
-router.put('/:id', restricted, (req, res) => {
-
+router.put('/:id', restricted, async (req, res) => {
+    let issueId = req.params.id;
+    let issueUpdate = req.body;
+    await Issues.findById(issueId)
+    .then(response => {
+        const merged = {...response, ...issueUpdate}
+        return merged;
+    })
+    .then(merged => {
+        console.log(merged)
+        return Issues.edit(issueId, merged)
+    })
+    .then(response => {
+        res.status(201).json(response)
+    })
+    .catch(err => {
+        res.status(500).json({message: 'Error looking up issue with that ID'})
+    })
 })
 
 router.put('/:id/upvote', restricted, (req, res) => {
