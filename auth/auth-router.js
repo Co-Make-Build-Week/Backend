@@ -13,8 +13,8 @@ router.post('/register', (req, res) => {
 
   Users.add(user)
     .then(response => {
-      const token = generateToken(user)
-      response.token = token
+      // const token = generateToken(user)
+      // response.token = token
       res.status(201).json(response)
     })
     .catch(err => {
@@ -59,7 +59,7 @@ function generateToken(user) {
     expiresIn: '5d'
   }
   const secret = "here is another secret"
-  
+
   return jwt.sign(payload, secret, options)
 }
 
