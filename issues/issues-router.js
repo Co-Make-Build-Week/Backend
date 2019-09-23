@@ -2,6 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const restricted = require('../api/restricted-middleware');
+const otherMiddle = require('../api/other-middleware');
 
 const Issues = require('./issues-model');
 const Voted = require('./vote-model');
@@ -43,13 +44,15 @@ router.get('/:id', restricted, (req, res) => {
             res.status(500).json({message: 'No issue found with that ID'})
         }
     })
-    .catch(response => {
+    .catch(error => {
         res.status(500).json({message: 'Error looking up issue with that ID'})
     })
 })
 
 // edit issue by id
-router.put('/:id', restricted, async (req, res) => {
+// todo: write middleware to check user that's logged in id matches issue to edit user_id
+
+router.put('/:id', restricted, otherMiddle.permissionCheck, async (req, res) => {
     let issueId = req.params.id;
     let issueUpdate = req.body;
     await Issues.findById(issueId)
@@ -68,6 +71,7 @@ router.put('/:id', restricted, async (req, res) => {
         res.status(500).json({message: 'Error looking up issue with that ID'})
     })
 })
+
 
 router.put('/:id/upvote', restricted, (req, res) => {
     Voted.getVoted(req.params.id)
