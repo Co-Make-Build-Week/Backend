@@ -9,12 +9,11 @@ router.post('/register', (req, res) => {
   let user = req.body;
   const hash = bcrypt.hashSync(user.password, 10)
   user.password = hash;
-  console.log(process.env);
 
   Users.add(user)
     .then(response => {
-      // const token = generateToken(user)
-      // response.token = token
+      const token = generateToken(user)
+      response.token = token
       res.status(201).json(response)
     })
     .catch(err => {
@@ -58,9 +57,8 @@ function generateToken(user) {
   const options = {
     expiresIn: '5d'
   }
-  const secret = "here is another secret"
 
-  return jwt.sign(payload, secret, options)
+  return jwt.sign(payload, secrets.jwtSecret, options)
 }
 
 module.exports = router;
