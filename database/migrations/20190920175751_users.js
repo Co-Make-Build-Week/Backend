@@ -2,16 +2,15 @@ exports.up = function(knex) {
   return knex.schema
   .createTable('users', users => {
     users.increments();
-
     users
       .string('username', 255)
       .notNullable()
       .unique();
     users.string('password', 255).notNullable();
   })
+
   .createTable('issues', tbl => {
     tbl.increments();
-
     tbl.integer('upvotes').notNullable().defaultTo(1);
     tbl.timestamps(false, true); // should create two columns: created_at, updated_at
     tbl.string('title', 255).notNullable();
@@ -21,12 +20,13 @@ exports.up = function(knex) {
     tbl.integer('user_id').unsigned().notNullable().references('id').inTable('users');
     tbl.string('category').notNullable();
   })
+
   .createTable('userVoted', tbl => {
-    tbl.increments('voted_id');
+    tbl.increments();
     tbl.integer('user_id').unsigned().notNullable().references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE');
     tbl.integer('issue_id').unsigned().notNullable().references('id').inTable('issues').onDelete('CASCADE').onUpdate('CASCADE');
-    tbl.unique(['user_id', 'issue_id'])
-    tbl.boolean('upvoted').defaultTo(false)
+    // tbl.unique(['user_id', 'issue_id'])
+    tbl.boolean('upvoted')
   })
 };
 
