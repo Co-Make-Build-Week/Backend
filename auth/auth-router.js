@@ -29,7 +29,7 @@ router.post('/login', (req, res) => {
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
         const token = generateToken(user)
-        res.status(200).json({ message: `Welcome to being logged in, ${user.username}!`, token })
+        res.status(200).json({ message: `Welcome to being logged in, ${user.username}!`, token} )
       } else {
         res.status(401).json({ message: 'Invalid credentials.' })
       }
@@ -49,10 +49,21 @@ router.get('/users', (req, res) => {
   })
 })
 
+// get user by user id
+router.get('/users/:id', (req, res) => {
+
+})
+
+// get user's issues by user id
+router.get('/users/:id/issues', (req, res) => {
+
+})
+
 //may move to another file
 function generateToken(user) {
   const payload = {
-    username: user.username
+    username: user.username,
+    userid: user.id
   }
   const options = {
     expiresIn: '5d'
