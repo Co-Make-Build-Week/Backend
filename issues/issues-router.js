@@ -91,8 +91,13 @@ router.put('/:id/downvote', restricted, async (req, res) => {
     const userId = req.user.userid;
     console.log(issueId, userId);
     await Voted.findByUserAndIssue(userId, issueId)
-    .then(response => {
-        return response; // should return row
+    .then(async response => {
+        console.log(response)
+        if (response){
+            return response; // should return row
+        } else {
+            res.status(404).json({message: "Must upvote first"}).end();
+        }
     })
     .then(row => {
         return Voted.downvote(row.user_id, row.issue_id)
