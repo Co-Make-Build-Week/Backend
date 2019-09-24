@@ -13,7 +13,6 @@ function uniqueUsername(req, res, next){
     const username = req.body.username;
     Users.findBy({username})
     .then(response => {
-        console.log(response);
         if (response.length > 0) {
             res.status(400).json({message: 'A user with that email already exists'})
         } else {
