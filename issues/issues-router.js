@@ -61,20 +61,42 @@ router.put('/:id', restricted, otherMiddle.permissionCheck, async (req, res) => 
 })
 
 
-router.put('/:id/upvote', restricted, (req, res) => {
-    const {id} = req.params
-    Voted.getVoted(id)
+router.put('/:id/upvote', restricted, async (req, res) => {
+    const issueId = req.params.id;
+    const userId = req.user.userid;
+    console.log(issueId, userId);
+    await Voted.findByUserAndIssue(userId, issueId)
     .then(response => {
-        res.status(200).json(response)
+        return response; // should return voted_id
+    })
+    .then(voted_id => {
+        return Voted.upvote(voted_id.voted_id)
+    })
+    .then(response => {
+        res.status(201).json(response)
     })
     .catch(err => {
         res.status(500).json(err)
     })
 })
 
-router.put('/:id/downvote', restricted, (req, res) => {
-    
-
+router.put('/:id/downvote', restricted, async (req, res) => {
+    const issueId = req.params.id;
+    const userId = req.user.userid;
+    console.log(issueId, userId);
+    await Voted.findByUserAndIssue(userId, issueId)
+    .then(response => {
+        return response; // should return voted_id
+    })
+    .then(voted_id => {
+        return Voted.downvote(voted_id.voted_id)
+    })
+    .then(response => {
+        res.status(201).json(response)
+    })
+    .catch(err => {
+        res.status(500).json(err)
+    })
 })
 
 // delete issue by id
@@ -86,6 +108,16 @@ router.delete('/:id', restricted, otherMiddle.permissionCheck, (req, res) => {
     })
     .catch(err => {
         res.status(500).json({message: `Error deleting issue ${issueId}`})
+    })
+})
+
+router.get('/votes/uservotedtable', (req, res) => {
+    Voted.find()
+    .then(response => {
+        res.status(200).json(response)
+    })
+    .catch(error => {
+        res.status(500).json(error)
     })
 })
 
