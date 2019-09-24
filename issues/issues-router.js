@@ -9,9 +9,15 @@ const Voted = require('./vote-model');
 // const secrets = require('../config/secrets')
 
 // returns list of all issues
-// todo: add url queries to sort, filter, limit
+// all query strings are optional. Example with all:
+// /api/issues?sortby=created_at&sortdir=asc&limit=20&category=sidewalks&userid=3
 router.get('/', restricted, (req, res) => {
-    Issues.find()
+    const sortby = req.query.sortby || 'upvotes';
+    const sortdir = req.query.sortdir || 'desc';
+    const limit = req.query.limit || 1000;
+    const category = req.query.category || 'all';
+    const userid = req.query.userid || 'all';
+    Issues.find(sortby, sortdir, limit, category, userid)
     .then(response => {
         res.status(200).json(response)
     })
