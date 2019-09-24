@@ -61,20 +61,53 @@ router.put('/:id', restricted, otherMiddle.permissionCheck, async (req, res) => 
 })
 
 
-router.put('/:id/upvote', restricted, (req, res) => {
-    const {id} = req.params
-    Voted.getVoted(id)
+router.put('/:id/upvote', restricted, async (req, res) => {
+    const issueId = req.params.id;
+    const userId = req.user.userid;
+    console.log(issueId, userId);
+    await Voted.findByUserAndIssue(userId, issueId)
+    .then(async response => {
+        console.log(response)
+        if (response){
+            return response; // should return row
+        } else {
+            await Voted.insertRow(userId, issueId)
+            res.status(201).json('upvoted').end();
+        }
+    })
+    .then(row => {
+        return Voted.upvote(row.user_id, row.issue_id)
+    })
     .then(response => {
-        res.status(200).json(response)
+        res.status(201).json(response)
     })
     .catch(err => {
         res.status(500).json(err)
     })
 })
 
-router.put('/:id/downvote', restricted, (req, res) => {
-    
-
+router.put('/:id/downvote', restricted, async (req, res) => {
+    const issueId = req.params.id;
+    const userId = req.user.userid;
+    console.log(issueId, userId);
+    await Voted.findByUserAndIssue(userId, issueId)
+    .then(async response => {
+        console.log(response)
+        if (response){
+            return response; // should return row
+        } else {
+            res.status(404).json({message: "Must upvote first"}).end();
+        }
+    })
+    .then(row => {
+        return Voted.downvote(row.user_id, row.issue_id)
+    })
+    .then(response => {
+        res.status(201).json(response)
+    })
+    .catch(err => {
+        res.status(500).json(err)
+    })
 })
 
 // delete issue by id
@@ -86,6 +119,16 @@ router.delete('/:id', restricted, otherMiddle.permissionCheck, (req, res) => {
     })
     .catch(err => {
         res.status(500).json({message: `Error deleting issue ${issueId}`})
+    })
+})
+
+router.get('/votes/uservotedtable', (req, res) => {
+    Voted.find()
+    .then(response => {
+        res.status(200).json(response)
+    })
+    .catch(error => {
+        res.status(500).json(error)
     })
 })
 
