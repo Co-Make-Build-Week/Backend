@@ -1,4 +1,5 @@
 const db = require('../database/db-config.js')
+const Issues = require('../issues/issues-model.js')
 
 module.exports = {
     setVoted,
@@ -33,12 +34,18 @@ function findByUserAndIssue(userid, issueid){
     return db('userVoted').where({'user_id': userid, 'issue_id': issueid}).first();
 }
 
-function upvote(user_id, issue_id){
-    return db('userVoted').where({'user_id': user_id, 'issue_id': issue_id}).update('upvoted', true)
+async function upvote(user_id, issue_id){
+    let issue = await Issues.findById(issue_id)
+    const incrementUp = issue.upvotes + 1
+    await db('userVoted').where({'user_id': user_id, 'issue_id': issue_id}).update({'upvoted': true})
+    await db('issues').where({'id': issue_id}).update({'upvotes': incrementUp})
 }
 
-function downvote(user_id, issue_id){
-    return db('userVoted').where({'user_id': user_id, 'issue_id': issue_id}).update('upvoted', false)
+async function downvote(user_id, issue_id){
+    let issue = await Issues.findById(issue_id)
+    const incrementDown = issue.upvotes - 1
+    await db('userVoted').where({'user_id': user_id, 'issue_id': issue_id}).update('upvoted', false)
+    await db('issues').where({'id': issue_id}).update({'upvotes': incrementDown})
 }
 
 function insertRow(userid, issueid){
@@ -62,4 +69,13 @@ function insertRow(userid, issueid){
 
 // function remove(id) {
 //   return db('issues').where({id}).del();
+// }
+
+// copies of upvote/downvote
+// function upvote(user_id, issue_id){
+//   return db('userVoted').where({'user_id': user_id, 'issue_id': issue_id}).update('upvoted', true)
+// }
+
+// function downvote(user_id, issue_id){
+//   return db('userVoted').where({'user_id': user_id, 'issue_id': issue_id}).update('upvoted', false)
 // }
