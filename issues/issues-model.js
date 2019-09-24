@@ -23,8 +23,9 @@ async function add(issue) {
   })
 }
 
-function edit(id, issue) {
-  return db('issues').where({id}).update(issue)
+async function edit(id, issue) {
+  await db('issues').where({id}).update(issue)
+  return findById(id);
 }
 
 function findBy(filter) {
