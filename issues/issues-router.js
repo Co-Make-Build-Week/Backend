@@ -11,7 +11,13 @@ const Voted = require('./vote-model');
 // returns list of all issues
 // todo: add url queries to sort, filter, limit
 router.get('/', restricted, (req, res) => {
-    Issues.find()
+    // const category = req.que
+    const sortby = req.query.sortby || 'upvotes';
+    const sortdir = req.query.sortdir || 'desc';
+    const limit = req.query.limit || 1000;
+    const category = req.query.category || 'all';
+    const userid = req.query.userid || 'all';
+    Issues.find(sortby, sortdir, limit, category, userid)
     .then(response => {
         res.status(200).json(response)
     })

@@ -11,8 +11,16 @@ module.exports = {
 }
 
 //may not be necessary
-function find() {
-  return db('issues')
+function find(sortby, sortdir, limit, category, userid) {
+  if (category === 'all' && userid === 'all'){
+    return db('issues').orderBy(`${sortby}`, `${sortdir}`).limit(limit)
+  } else if (userid === 'all'){
+    return db('issues').orderBy(`${sortby}`, `${sortdir}`).limit(limit).where({category})
+  } else if (category === 'all'){
+    return db('issues').orderBy(`${sortby}`, `${sortdir}`).limit(limit).where({'user_id': userid})
+  } else {
+    return db('issues').orderBy(`${sortby}`, `${sortdir}`).limit(limit).where({'category': category, 'user_id': userid})
+  }
 }
 
 async function add(issue) {
