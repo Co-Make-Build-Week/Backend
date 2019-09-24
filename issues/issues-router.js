@@ -66,11 +66,17 @@ router.put('/:id/upvote', restricted, async (req, res) => {
     const userId = req.user.userid;
     console.log(issueId, userId);
     await Voted.findByUserAndIssue(userId, issueId)
-    .then(response => {
-        return response; // should return voted_id
+    .then(async response => {
+        console.log(response)
+        if (response){
+            return response; // should return row
+        } else {
+            await Voted.insertRow(userId, issueId)
+            res.status(201).json('upvoted').end();
+        }
     })
-    .then(voted_id => {
-        return Voted.upvote(voted_id.voted_id)
+    .then(row => {
+        return Voted.upvote(row.user_id, row.issue_id)
     })
     .then(response => {
         res.status(201).json(response)
@@ -86,10 +92,10 @@ router.put('/:id/downvote', restricted, async (req, res) => {
     console.log(issueId, userId);
     await Voted.findByUserAndIssue(userId, issueId)
     .then(response => {
-        return response; // should return voted_id
+        return response; // should return row
     })
-    .then(voted_id => {
-        return Voted.downvote(voted_id.voted_id)
+    .then(row => {
+        return Voted.downvote(row.user_id, row.issue_id)
     })
     .then(response => {
         res.status(201).json(response)

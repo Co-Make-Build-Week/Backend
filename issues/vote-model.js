@@ -5,7 +5,8 @@ module.exports = {
     find,
     findByUserAndIssue,
     upvote,
-    downvote
+    downvote,
+    insertRow
 }
 
 function setVoted(id) {
@@ -29,15 +30,19 @@ function find() {
 }
 
 function findByUserAndIssue(userid, issueid){
-    return db('userVoted').where({'user_id': userid, 'issue_id': issueid}).select('voted_id').first();
+    return db('userVoted').where({'user_id': userid, 'issue_id': issueid}).first();
 }
 
-function upvote(voted_id){
-    return db('userVoted').where({voted_id}).update('upvoted', true)
+function upvote(user_id, issue_id){
+    return db('userVoted').where({'user_id': user_id, 'issue_id': issue_id}).update('upvoted', true)
 }
 
-function downvote(voted_id){
-    return db('userVoted').where({voted_id}).update('upvoted', false)
+function downvote(user_id, issue_id){
+    return db('userVoted').where({'user_id': user_id, 'issue_id': issue_id}).update('upvoted', false)
+}
+
+function insertRow(userid, issueid){
+    return db('userVoted').insert({'user_id': userid, 'issue_id': issueid, upvoted: true})
 }
 
 // function findById(id) {
