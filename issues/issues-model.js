@@ -17,7 +17,10 @@ function find() {
 
 async function add(issue) {
   const [id] = await db('issues').insert(issue, 'id')
-  return findById(id)
+  return findById(id).then(async response => {
+    await db('userVoted').insert({user_id: response.user_id, issue_id: response.id, upvoted: 1})
+    return findById(response.id)
+  })
 }
 
 function edit(id, issue) {

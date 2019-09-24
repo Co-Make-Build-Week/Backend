@@ -26,6 +26,7 @@ router.post('/', restricted, (req, res) => {
     issue.user_id = req.user.userid;
     Issues.add(issue)
     .then(response => {
+        // Voted.setVoted(issue.user_id)
         res.status(201).json(response)
     })
     .catch(err => {
@@ -61,7 +62,8 @@ router.put('/:id', restricted, otherMiddle.permissionCheck, async (req, res) => 
 
 
 router.put('/:id/upvote', restricted, (req, res) => {
-    Voted.getVoted(req.params.id)
+    const {id} = req.params
+    Voted.getVoted(id)
     .then(response => {
         res.status(200).json(response)
     })
