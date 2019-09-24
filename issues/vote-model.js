@@ -1,13 +1,13 @@
 const db = require('../database/db-config.js')
 
 module.exports = {
-    getVoted,
+    setVoted,
     toggle
 }
 
-function getVoted(id) {
-    console.log('getvoted')
-    return db('userVoted')
+function setVoted(id) {
+    // console.log('getvoted')
+    return db('userVoted').insert({user_id: 1, issue_id: 1, upvoted: 1})
 }
 
 function toggle(id) {
