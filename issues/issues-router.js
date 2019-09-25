@@ -64,10 +64,10 @@ router.put('/:id', restricted, otherMiddle.permissionCheck, async (req, res) => 
 router.put('/:id/upvote', restricted, (req, res) => {
     const issueId = req.params.id;
     const userId = req.user.userid;
-    console.log(issueId, userId);
+    console.log('issueId, userId', issueId, userId);
     Voted.findByUserAndIssue(userId, issueId)
     .then(response => {
-        console.log(response)
+        console.log('response', response)
         if (response && response.upvoted == false){
             Voted.upvote(response.user_id, response.issue_id) // should return row
             .then(response => {
