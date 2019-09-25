@@ -1,3 +1,6 @@
+database/users.db3
+
+
 # Logs
 logs
 *.log
@@ -91,4 +94,3 @@ public
 # DynamoDB Local files
 .dynamodb/
 
-./database/users.db3

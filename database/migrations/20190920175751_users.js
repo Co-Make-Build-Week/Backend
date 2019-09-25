@@ -17,7 +17,7 @@ exports.up = function(knex) {
     tbl.string('issueLocation', 255);
     tbl.text('details');
     tbl.string('imageURL');
-    tbl.integer('user_id').unsigned().notNullable().references('id').inTable('users');
+    tbl.integer('user_id').unsigned().notNullable().references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE');
     tbl.string('category').notNullable();
   })
 
