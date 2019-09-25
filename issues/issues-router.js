@@ -85,7 +85,7 @@ router.put('/:id/upvote', restricted, (req, res) => {
             console.log(userId, issueId)
             Voted.insertRow(userId, issueId)
             .then(response => {
-              res.status(200).json('upvoted').end();
+              res.status(200).json({message: 'upvoted'}).end();
             })
         }
     })

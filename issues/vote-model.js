@@ -48,8 +48,11 @@ async function downvote(user_id, issue_id){
     await db('issues').where({'id': issue_id}).update({'upvotes': incrementDown})
 }
 
-function insertRow(userid, issueid){
-    return db('userVoted').insert({'user_id': userid, 'issue_id': issueid, upvoted: true})
+async function insertRow(userid, issueid){
+    let issue = await Issues.findById(issueid)
+    const incrementUp = issue.upvotes + 1
+    await db('userVoted').insert({'user_id': userid, 'issue_id': issueid, upvoted: true})
+    await db('issues').where({'id': issueid}).update({'upvotes': incrementUp})
 }
 
 // function findById(id) {
