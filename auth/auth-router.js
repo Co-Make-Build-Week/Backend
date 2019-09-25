@@ -14,7 +14,7 @@ router.post('/register', otherMiddle.uniqueUsername, (req, res) => {
 
   Users.add(user)
     .then(response => {
-      const token = generateToken(user)
+      const token = generateToken(response)
       response.token = token
       // res.status(201).json(response)
       res.status(201).json({ message: 'You have successfully registered!', userId: response.id, username: response.username, token: response.token})
