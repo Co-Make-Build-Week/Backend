@@ -16,7 +16,8 @@ router.post('/register', otherMiddle.uniqueUsername, (req, res) => {
     .then(response => {
       const token = generateToken(user)
       response.token = token
-      res.status(201).json(response)
+      // res.status(201).json(response)
+      res.status(201).json({ message: 'You have successfully registered!', userId: response.id, username: response.username, token: response.token})
     })
     .catch(err => {
       res.status(500).json({ message: 'Unexpected error registering the user.'})
