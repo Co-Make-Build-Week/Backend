@@ -29,9 +29,10 @@ router.post('/login', (req, res) => {
   Users.findBy({ username })
     .first()
     .then(user => {
+      const userId = user.id
       if (user && bcrypt.compareSync(password, user.password)) {
         const token = generateToken(user)
-        res.status(200).json({ message: `Welcome to being logged in, ${user.username}!`, token} )
+        res.status(200).json({ message: `Welcome to being logged in, ${user.username}!`, token, userId} )
       } else {
         res.status(401).json({ message: 'Invalid credentials.' })
       }
