@@ -68,30 +68,27 @@ router.put('/:id', restricted, otherMiddle.permissionCheck, async (req, res) => 
 
 
 router.put('/:id/upvote', restricted, (req, res) => {
-    const issueId = req.params.id;
-    const userId = req.user.userid;
-    console.log(issueId, userId);
+    const issueId = Number(req.params.id);
+    const userId = Number(req.user.userid);
+    console.log('issueId, userId', typeof issueId, typeof userId);
     Voted.findByUserAndIssue(userId, issueId)
     .then(response => {
-        console.log(response)
+        console.log('response', response)
         if (response && response.upvoted == false){
             Voted.upvote(response.user_id, response.issue_id) // should return row
             .then(response => {
-              res.status(200).json({message: "upvoted"}).end()
+              res.status(200).json({message: "Upvoted"}).end()
           })
         } else if (response && response.upvoted == true) {
             res.status(404).json({message: 'User has already upvoted this issue.'}).end()
         } else {
+            console.log(userId, issueId)
             Voted.insertRow(userId, issueId)
-            res.status(200).json('upvoted').end();
+            .then(response => {
+              res.status(200).json('upvoted').end();
+            })
         }
     })
-    // .then(row => {
-    //     return Voted.upvote(row.user_id, row.issue_id)
-    // })
-    // .then(response => {
-    //     res.status(200).json({message: "upvoted"}).end()
-    // })
     .catch(err => {
         res.status(500).json(err)
     })
@@ -116,12 +113,6 @@ router.put('/:id/downvote', restricted, (req, res) => {
             res.status(404).json({message: "Must upvote first"}).end();
         }
     })
-    // .then(row => {
-    //     return Voted.downvote(row.user_id, row.issue_id)
-    // })
-    // .then(response => {
-    //     res.status(200).json({message: "downvoted"}).end()
-    // })
     .catch(err => {
         res.status(500).json(err)
     })
