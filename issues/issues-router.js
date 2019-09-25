@@ -9,9 +9,15 @@ const Voted = require('./vote-model');
 // const secrets = require('../config/secrets')
 
 // returns list of all issues
-// todo: add url queries to sort, filter, limit
+// all query strings are optional. Example with all:
+// /api/issues?sortby=created_at&sortdir=asc&limit=20&category=sidewalks&userid=3
 router.get('/', restricted, (req, res) => {
-    Issues.find()
+    const sortby = req.query.sortby || 'upvotes';
+    const sortdir = req.query.sortdir || 'desc';
+    const limit = req.query.limit || 1000;
+    const category = req.query.category || 'all';
+    const userid = req.query.userid || 'all';
+    Issues.find(sortby, sortdir, limit, category, userid)
     .then(response => {
         res.status(200).json(response)
     })
@@ -61,50 +67,61 @@ router.put('/:id', restricted, otherMiddle.permissionCheck, async (req, res) => 
 })
 
 
-router.put('/:id/upvote', restricted, async (req, res) => {
+router.put('/:id/upvote', restricted, (req, res) => {
     const issueId = req.params.id;
     const userId = req.user.userid;
     console.log(issueId, userId);
-    await Voted.findByUserAndIssue(userId, issueId)
-    .then(async response => {
+    Voted.findByUserAndIssue(userId, issueId)
+    .then(response => {
         console.log(response)
-        if (response){
-            return response; // should return row
+        if (response && response.upvoted == false){
+            Voted.upvote(response.user_id, response.issue_id) // should return row
+            .then(response => {
+              res.status(200).json({message: "upvoted"}).end()
+          })
+        } else if (response && response.upvoted == true) {
+            res.status(404).json({message: 'User has already upvoted this issue.'}).end()
         } else {
-            await Voted.insertRow(userId, issueId)
-            res.status(201).json('upvoted').end();
+            Voted.insertRow(userId, issueId)
+            res.status(200).json('upvoted').end();
         }
     })
-    .then(row => {
-        return Voted.upvote(row.user_id, row.issue_id)
-    })
-    .then(response => {
-        res.status(201).json(response)
-    })
+    // .then(row => {
+    //     return Voted.upvote(row.user_id, row.issue_id)
+    // })
+    // .then(response => {
+    //     res.status(200).json({message: "upvoted"}).end()
+    // })
     .catch(err => {
         res.status(500).json(err)
     })
 })
 
-router.put('/:id/downvote', restricted, async (req, res) => {
+router.put('/:id/downvote', restricted, (req, res) => {
     const issueId = req.params.id;
     const userId = req.user.userid;
     console.log(issueId, userId);
-    await Voted.findByUserAndIssue(userId, issueId)
-    .then(async response => {
+    Voted.findByUserAndIssue(userId, issueId)
+    .then(response => {
         console.log(response)
-        if (response){
-            return response; // should return row
+        if (response && response.upvoted == true){
+          Voted.downvote(response.user_id, response.issue_id)
+          .then(response => {
+            res.status(200).json({message: "downvoted"}).end()
+          })
+          // return response; // should return row
+        } else if (response && response.upvoted == false) {
+            return res.status(404).json({message: 'User has already downvoted this issue.'}).end()
         } else {
             res.status(404).json({message: "Must upvote first"}).end();
         }
     })
-    .then(row => {
-        return Voted.downvote(row.user_id, row.issue_id)
-    })
-    .then(response => {
-        res.status(201).json(response)
-    })
+    // .then(row => {
+    //     return Voted.downvote(row.user_id, row.issue_id)
+    // })
+    // .then(response => {
+    //     res.status(200).json({message: "downvoted"}).end()
+    // })
     .catch(err => {
         res.status(500).json(err)
     })
