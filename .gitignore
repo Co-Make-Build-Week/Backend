@@ -91,4 +91,4 @@ public
 # DynamoDB Local files
 .dynamodb/
 
-database/users.db3
+./database/users.db3
