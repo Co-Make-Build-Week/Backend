@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "jest": {
+    "testEnvirnoment": "node"
+  },
   "scripts": {
     "test": "cross-env NODE_ENV=testing jest --watch",
     "start": "node index.js",

@@ -95,3 +95,4 @@ public
 .dynamodb/
 
 database/users.db3
+database/test.db3
