@@ -9,16 +9,17 @@ async function registerToken() {
     .post("/api/auth/register")
     .send({ username: "test2", password: "1234" });
   const token = response.body.token;
+  console.log("TOKEN IN FCTN", token);
   return token;
 }
 
-async function post(){
+async function post() {
   const token = await registerToken();
   const response = await request(server)
-  .post("/api/issues")
-  .send({ title: "Test title", category: "roads" })
-  .set("authorization", token);
-  return response.body
+    .post("/api/issues")
+    .send({ title: "Test title", category: "roads" })
+    .set("authorization", token);
+  return response.body;
 }
 
 describe("Issues router", () => {
@@ -26,7 +27,12 @@ describe("Issues router", () => {
     await db("users").truncate();
     await db("issues").truncate();
   });
+
   describe("GET /api/issues", () => {
+    beforeEach(async () => {
+      await db("users").truncate();
+      await db("issues").truncate();
+    });
     it("should return 400 Bad Request and 'Please provide a token on authorization header' if no token is sent", async () => {
       const get = await request(server).get("/api/issues");
       expect(get.status).toBe(400);
@@ -52,6 +58,7 @@ describe("Issues router", () => {
       expect(response.status).toBe(200);
     });
   });
+
   describe("POST /api/issues", () => {
     it("returns 201 and issue with valid token and issue", async () => {
       const token = await registerToken();
@@ -78,17 +85,6 @@ describe("Issues router", () => {
         .send({ title: "Test title" })
         .set("authorization", token);
       expect(response.status).toBe(500);
-    });
-  });
-  describe("GET /:id", () => {
-    it("returns 200 and issue", async () => {
-      await post();
-      const response = await request(server)
-        .post("/api/issues")
-        .send({ title: "Test title", category: "roads" })
-        .set("authorization", token);
-      expect(response.status).toBe(201);
-
     });
   });
 });
