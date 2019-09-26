@@ -19,7 +19,8 @@ async function post() {
     .post("/api/issues")
     .send({ title: "Test title", category: "roads" })
     .set("authorization", token);
-  return response.body;
+  const issue = response.body;
+  return {issue, token}
 }
 
 describe("Issues router", () => {
@@ -86,5 +87,37 @@ describe("Issues router", () => {
         .set("authorization", token);
       expect(response.status).toBe(500);
     });
+  })
+  
+  describe("PUT /api/issues/:id/downvote", () => {
+    it("returns 200 when downvoted", async () => {
+      const res = await post()
+      const token = await res.token
+      const response = await request(server).put(`/api/issues/1/downvote`).set('authorization', token)
+      expect(response.status).toBe(200)
+    })
+    it("returns 404 when downvoted before upvoting", async () => {
+      const res = await post()
+      const token = await res.token
+      await request(server).put(`/api/issues/1/downvote`).set('authorization', token)
+      const response2 = await request(server).put(`/api/issues/1/downvote`).set('authorization', token)
+      expect(response2.status).toBe(404)
+    })
+  })
+  
+  describe("PUT /api/issues/:id/upvote", () => {
+    it("returns 404 when upvoting before downvoting", async () => {
+      const res = await post()
+      const token = await res.token
+      const response = await request(server).put(`/api/issues/1/upvote`).set('authorization', token)
+      expect(response.status).toBe(404) 
+    })
+    it("returns 200 when upvoted", async () => {
+      const res = await post()
+      const token = await res.token
+      await request(server).put(`/api/issues/1/downvote`).set('authorization', token)
+      const response = await request(server).put(`/api/issues/1/upvote`).set('authorization', token)
+      expect(response.status).toBe(200)
+    })
   });
 });

@@ -47,7 +47,7 @@ function validateIssueId(req, res, next){
             res.issue = response;
             next();
         } else {
-            res.status(500).json({message: 'No issue found with that ID'}).end();
+            res.status(400).json({message: 'No issue found with that ID'}).end();
         }
     })
     .catch(error => {
