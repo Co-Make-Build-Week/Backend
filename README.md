@@ -163,7 +163,7 @@ All are optional. You can use as many or as few in combination as you like.
 
 ## POST  /api/issues
 
-Adds a new issue. Requires authorization header with valid token. Required fields are **title** and **category.** 
+Adds a new issue. Requires authorization header with valid token. Required fields are **title** and **category.** Optionally include: **details**, **imageURL**
 
 **Title** and **issueLocation** are limited to 255 characters, but the string in the **details** field can be longer. 
 
