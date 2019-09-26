@@ -7,7 +7,7 @@
     "testEnvirnoment": "node"
   },
   "scripts": {
-    "test": "cross-env NODE_ENV=testing jest --watch",
+    "test": "cross-env NODE_ENV=testing JWT_SECRET=secret1234 jest --watch",
     "start": "node index.js",
     "server": "nodemon index.js"
   },

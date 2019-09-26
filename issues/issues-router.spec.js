@@ -1,16 +1,45 @@
-const request = require('supertest');
-const server = require('../api/server');
+const request = require("supertest");
+const server = require("../api/server");
+const db = require("../database/db-config");
 
-describe('/api/issues', () => {
-    it("should return 400 Bad Request and 'Please provide a token on authorization header' if no token is sent", async () => {
-        const get = await request(server).get('/api/issues')
-        expect(get.status).toBe(400)
-        expect(get.body.message).toBe('Please provide a token on authorization header')
-    });
-    it("should return 401 Unauthorized and 'Invalid token' if bad token is sent", async () => {
-        const get = await request(server).get('/api/issues').set('authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImVsZWFzYWhAbGFtYmRhLmNvbSIsInVzZXJpZCI6NSwiaWF0IjoxNTY5NTE5MjIyLCJleHAiOjE1Njk5NTEyMjJ9.SGZMwP_w7SLzwwVPXNeLm4am6qZ1sxOgx1RWtv0eLB0')
-        expect(get.status).toBe(401)
-        expect(get.body.message).toBe('Invalid token')
-    });
+// console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
+async function registerToken() {
+  const response = await request(server)
+    .post("/api/auth/register")
+    .send({ username: "test2", password: "1234" });
+  const token = response.body.token;
+  return token;
+}
+
+
+describe("/api/issues", () => {
+  beforeEach(async () => {
+    await db("users").truncate();
+    await db("issues").truncate();
+  });
+  it("should return 400 Bad Request and 'Please provide a token on authorization header' if no token is sent", async () => {
+    const get = await request(server).get("/api/issues");
+    expect(get.status).toBe(400);
+    expect(get.body.message).toBe(
+      "Please provide a token on authorization header"
+    );
+  });
+  it("should return 401 Unauthorized and 'Invalid token' if bad token is sent", async () => {
+    const get = await request(server)
+      .get("/api/issues")
+      .set(
+        "authorization",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImVsZWFzYWhAbGFtYmRhLmNvbSIsInVzZXJpZCI6NSwiaWF0IjoxNTY5NTE5MjIyLCJleHAiOjE1Njk5NTEyMjJ9.SGZMwP_w7SLzwwVPXNeLm4am6qZ1sxOgx1RWtv0eLB0"
+      );
+    expect(get.status).toBe(401);
+    expect(get.body.message).toBe("Invalid token");
+  });
+  it("should return 200 and list of issues with a valid token", async () => {
+    const token = await registerToken();
+    // console.log("TOKEN", token)
+    const response = await request(server).get("/api/issues").set("authorization", token)
+    expect(response.status).toBe(200);
+    // console.log(response.body);
+  });
 });
