@@ -94,13 +94,26 @@ describe("Issues router", () => {
     
   });
   describe('/:id', () => {
-      it('Returns an issue and status 200', async () => {
+      beforeEach(async () => {
+        await db("users").truncate();
+        await db("issues").truncate();
+      });
+
+      it('Post issue, request same issue on /:id, receive issue and status 200', async () => {
         const {issue, token} = await post();
         const response = await request(server)
           .get(`/api/issues/${issue.id}`)
           .set("authorization", token);
         expect(response.status).toBe(200);
         expect(response.body.id).toBe(issue.id)
+        expect(response.body.category).toBe(issue.category);
+      });
+      it('Returns 404 not found  and message if issue does not exist', async () => {
+        const token = await registerToken();
+        const response = await request(server)
+        .get('/api/issues/3')
+        .set("authorization", token);
+        expect(response.status).toBe(404);
       });
   });
 });
