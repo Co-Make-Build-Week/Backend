@@ -101,7 +101,7 @@ describe("Issues router", () => {
         .set("authorization", token);
       expect(response.status).toBe(500);
     });
-  });
+  })
 
   describe("GET /:id", () => {
     beforeEach(async () => {
@@ -156,5 +156,37 @@ describe("Issues router", () => {
         expect(response.status).toBe(200);
         expect(response.body.message).toBe(`Deleted issue ${issue.id}`)
     });
-  });
+  })
+  
+  describe("PUT /api/issues/:id/downvote", () => {
+    it("returns 200 when downvoted", async () => {
+      const res = await post()
+      const token = await res.token
+      const response = await request(server).put(`/api/issues/1/downvote`).set('authorization', token)
+      expect(response.status).toBe(200)
+    })
+    it("returns 404 when downvoted before upvoting", async () => {
+      const res = await post()
+      const token = await res.token
+      await request(server).put(`/api/issues/1/downvote`).set('authorization', token)
+      const response2 = await request(server).put(`/api/issues/1/downvote`).set('authorization', token)
+      expect(response2.status).toBe(404)
+    })
+  })
+  
+  describe("PUT /api/issues/:id/upvote", () => {
+    it("returns 404 when upvoting before downvoting", async () => {
+      const res = await post()
+      const token = await res.token
+      const response = await request(server).put(`/api/issues/1/upvote`).set('authorization', token)
+      expect(response.status).toBe(404) 
+    })
+    it("returns 200 when upvoted", async () => {
+      const res = await post()
+      const token = await res.token
+      await request(server).put(`/api/issues/1/downvote`).set('authorization', token)
+      const response = await request(server).put(`/api/issues/1/upvote`).set('authorization', token)
+      expect(response.status).toBe(200)
+    })
+  });;
 });
