@@ -82,8 +82,13 @@ describe("Issues router", () => {
   });
   describe("GET /:id", () => {
     it("returns 200 and issue", async () => {
-      const response = await post();
-      console.log(response)
+      await post();
+      const response = await request(server)
+        .post("/api/issues")
+        .send({ title: "Test title", category: "roads" })
+        .set("authorization", token);
+      expect(response.status).toBe(201);
+
     });
   });
 });

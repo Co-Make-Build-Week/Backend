@@ -7,7 +7,7 @@
     "testEnvirnoment": "node"
   },
   "scripts": {
-    "test": "cross-env NODE_ENV=testing JWT_SECRET=secret1234 jest --watch",
+    "test": "cross-env NODE_ENV=testing JWT_SECRET=thissecrethere jest --watch",
     "start": "node index.js",
     "server": "nodemon index.js"
   },
@@ -38,6 +38,7 @@
     "cross-env": "^6.0.0",
     "jest": "^24.9.0",
     "nodemon": "^1.19.2",
+    "superagent": "^5.1.0",
     "supertest": "^4.0.2"
   },
   "jest": {
