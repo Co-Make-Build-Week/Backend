@@ -145,7 +145,7 @@ Returns a list of all issues, sorted by upvotes.
     // ... etc
     ]
 
-### Query Strings on /api/auth/:issues
+### Query Strings on /api/auth/issues
 
 Optionally, you can change what's returned on this endpoint by putting **?** at the end of the url, and appending key-value pairs as **key=value**, separated by **&.**
 
