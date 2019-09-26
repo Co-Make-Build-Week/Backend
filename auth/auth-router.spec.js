@@ -10,7 +10,7 @@ describe('auth-router.js', () => {
     await db('users').truncate();
   })
 
-  describe('add() helper model', () => {
+  describe('add() / find() helper model', () => {
     // it('returns 201 OK', async () => {
     //   // const expectedStatusCode = 201
     //   const response = await request(server).post('/api/auth/register').send({username: 'testing', password: '1234'});
@@ -27,6 +27,20 @@ describe('auth-router.js', () => {
       await Users.add({username: 'bryan', password: '1234'})
       const response = await Users.find()
       expect(response.length).toBe(2)
+    })
+  })
+
+  describe('findBy() helper model', () => {
+    it('finds the user', async () => {
+      await Users.add({username: 'carlo', password: '1234'})
+      const filter = {username: 'carlo'}
+      const user = await Users.findBy(filter).first()
+      expect(user.username).toBe('carlo');
+    })
+    it('finds by ID', async () => {
+      await Users.add({username: 'bryan', password: '1234'})
+      const user = await Users.findById(1).first()
+      expect(user.username).toBe('bryan')
     })
   })
 })
