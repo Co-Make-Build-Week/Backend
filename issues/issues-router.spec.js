@@ -141,4 +141,20 @@ describe("Issues router", () => {
      expect(updatedIssue.body.category).toBe('landscape');
     });
   });
+
+  describe('DELETE /:id', () => {
+    beforeEach(async () => {
+        await db("users").truncate();
+        await db("issues").truncate();
+      });
+    it('POST issue, then DELETE same issue. Should return 200 and message.', async () => {
+        const { issue, token } = await post();
+        const response = await request(server)
+        .del(`/api/issues/${issue.id}`)
+        .set("authorization", token)
+        const issues = await db('issues').where('id', issue.id).first()
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe(`Deleted issue ${issue.id}`)
+    });
+  });
 });
